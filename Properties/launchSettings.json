@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MegaJump": {
+      "commandName": "Project",
+      "workingDirectory": "K:\\SteamLibrary\\steamapps\\common\\Megabonk"
+    }
+  }
+}
