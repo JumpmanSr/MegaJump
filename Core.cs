@@ -1,10 +1,11 @@
-﻿using Il2CppAssets.Scripts.Actors.Enemies;
+﻿using Il2Cpp;
+using Il2CppAssets.Scripts.Actors.Enemies;
 using Il2CppRewired;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.Splines;
 
-[assembly: MelonInfo(typeof(MegaJump.Core), "MegaJump", "1.0.0", "JumpmanSr", null)]
+[assembly: MelonInfo(typeof(MegaJump.Core), "MegaJump", "1.0.12", "JumpmanSr", null)]
 [assembly: MelonGame("Ved", "Megabonk")]
 
 namespace MegaJump
@@ -69,29 +70,59 @@ namespace MegaJump
                         else
                             DrawBox(new Vector2(boxX, boxY), 80f, 100f, UnityEngine.Color.blue, 1f);
                     }
-
                 }
+                //foreach(var shrine in DataManager.Instance.maps[0].shrines) // doesn't update properly atm so commented out for now
+                //{
+                //    if (shrine == null || shrine.transform == null)
+                //        continue;
+                //    var shrinePos = shrine.transform.position;
+                //    Vector3 screenPos = Camera.main.WorldToScreenPoint(shrinePos);
+                //    if (screenPos.z > 0) // && Vector3.Distance(Camera.main.transform.position, enemyPos) <= _ESP_Range) // Only draw if in front of the camera
+                //    {
+                //        float boxX = screenPos.x - (_ESP_BoxWidth / 2);
+                //        float boxY = Screen.height - screenPos.y - (_ESP_BoxHeight / 2); // Invert Y for GUI
+                //        GUI.Label(new Rect(boxX, boxY - 20, 200, 20), "Shrine");
+                //        if (_DrawLineOnly)
+                //            DrawLine(new Vector2(Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.feet.transform.position).x, Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.head.transform.position).y - Il2Cpp.GameManager.Instance.player.height * 3), new Vector2(screenPos.x, Screen.height - screenPos.y), UnityEngine.Color.yellow, 1f);
+                //        else
+                //            DrawBox(new Vector2(boxX, boxY), 80f, 100f, UnityEngine.Color.yellow, 1f);
+                //    }
+                //}
             }
             // Simple toggle for ESP
             GUI.color = Color.red;
-            GUI.Label(new Rect(10, 10, 300, 30), "MegaJump by JumpmanSr", bigger);
+            GUI.Label(new Rect(10, Screen.height - 170, 300, 30), "MegaJump by JumpmanSr", bigger);
             if (_ESP)
             {
                 GUI.color = Color.green;
-                GUI.Label(new Rect(10, 50, 300, 30), "ESP: ON (F3 to toggle)");
+                GUI.Label(new Rect(10, Screen.height - 150, 300, 30), "ESP: ON (F3 to toggle)");
             }
             else
-            GUI.Label(new Rect(10, 50, 300, 30), "ESP: OFF (F3 to toggle)");
-            GUI.Label(new Rect(10, 30, 300, 30), "F2 To Increase Attack Speed by 1%");
-            GUI.Label(new Rect(10, 70, 300, 30), "F4 to Toggle Boxes / Lines");
-            GUI.Label(new Rect(10, 90, 300, 30), "F5 to Heal Player");
-            GUI.Label(new Rect(10, 110, 300, 30), "F6 to Grab All XP");
-            GUI.Label(new Rect(10, 130, 300, 30), "F7 to Add Extra Jumps");
+            {
+                GUI.Label(new Rect(10, Screen.height - 150, 300, 30), "ESP: OFF (F3 to toggle)");
+            }
+            GUI.Label(new Rect(10, Screen.height - 130, 300, 30), "F1 to Add an Extra Projectile");
+            GUI.Label(new Rect(10, Screen.height - 110, 300, 30), "F2 To Increase Attack Speed + 100%");
+            GUI.Label(new Rect(10, Screen.height - 90, 300, 30), "F4 to Toggle Boxes / Lines");
+            GUI.Label(new Rect(10, Screen.height - 70, 300, 30), "F5 to Heal Player");
+            GUI.Label(new Rect(10, Screen.height - 50, 300, 30), "F6 to Grab All XP");
+            GUI.Label(new Rect(10, Screen.height - 30, 300, 30), "F7 to Add Extra Jumps");
         }
 
         public override void OnUpdate()
         {
 
+            if (UnityEngine.Input.GetKeyDown(KeyCode.F1))
+            {
+                var player = Il2Cpp.GameManager.Instance.GetPlayerInventory();
+                if (player != null)
+                {
+                    player.playerStats.stats[Il2CppAssets.Scripts.Menu.Shop.EStat.Projectiles] += 1f;
+
+                }
+                else
+                    MelonLogger.Warning("Player is NULL");
+            }
             if (UnityEngine.Input.GetKeyDown(KeyCode.F2))
             {
                 var player = Il2Cpp.GameManager.Instance.GetPlayerInventory();
