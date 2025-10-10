@@ -91,7 +91,7 @@ namespace MegaJump
             }
             // Simple toggle for ESP
             GUI.color = Color.red;
-            GUI.Label(new Rect(10, Screen.height - 170, 300, 30), "MegaJump by JumpmanSr", bigger);
+            GUI.Label(new Rect(10, Screen.height - 180, 300, 30), "MegaJump by JumpmanSr", bigger);
             if (_ESP)
             {
                 GUI.color = Color.green;
