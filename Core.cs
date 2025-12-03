@@ -1,9 +1,12 @@
 ﻿using Il2Cpp;
 using Il2CppAssets.Scripts.Actors.Enemies;
 using Il2CppRewired;
+using Il2CppInterop.Runtime;
 using MelonLoader;
 using UnityEngine;
 using UnityEngine.Splines;
+using Il2CppAssets.Scripts.Inventory__Items__Pickups.Chests;
+using Il2CppRewired.Internal.Glyphs;
 
 [assembly: MelonInfo(typeof(MegaJump.Core), "MegaJump", "1.0.12", "JumpmanSr", null)]
 [assembly: MelonGame("Ved", "Megabonk")]
@@ -17,7 +20,7 @@ namespace MegaJump
         float _ESP_Range = 25f;
         float _ESP_BoxWidth = 80f;
         float _ESP_BoxHeight = 100f;
-        bool _DrawLineOnly = false;
+        bool _DrawInteractables = true;
         bool _SetFontSizeOnce = true;
         GUIStyle bigger = null;
 
@@ -65,29 +68,37 @@ namespace MegaJump
                         float boxX = screenPos.x - (_ESP_BoxWidth / 2);
                         float boxY = Screen.height - screenPos.y - (_ESP_BoxHeight / 2); // Invert Y for GUI
                         GUI.Label(new Rect(boxX, boxY - 20, 200, 20), "HP " + Math.Round(enemy.hp,2).ToString() + "/" + Math.Round(enemy.maxHp,2).ToString());
-                        if (_DrawLineOnly)
-                            DrawLine(new Vector2(Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.feet.transform.position).x, Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.head.transform.position).y - Il2Cpp.GameManager.Instance.player.height*3), new Vector2(screenPos.x, Screen.height - screenPos.y), UnityEngine.Color.blue, 1f);
-                        else
-                            DrawBox(new Vector2(boxX, boxY), 80f, 100f, UnityEngine.Color.blue, 1f);
+                        DrawBox(new Vector2(boxX, boxY), 80f, 100f, UnityEngine.Color.blue, 1f);
+
+                        //OLD Code use to be Line ESP
+                        //if (_DrawInteractables)
+                        //    DrawLine(new Vector2(Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.feet.transform.position).x, Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.head.transform.position).y - Il2Cpp.GameManager.Instance.player.height*3), new Vector2(screenPos.x, Screen.height - screenPos.y), UnityEngine.Color.blue, 1f);
+                        //else
                     }
                 }
-                //foreach(var shrine in DataManager.Instance.maps[0].shrines) // doesn't update properly atm so commented out for now
-                //{
-                //    if (shrine == null || shrine.transform == null)
-                //        continue;
-                //    var shrinePos = shrine.transform.position;
-                //    Vector3 screenPos = Camera.main.WorldToScreenPoint(shrinePos);
-                //    if (screenPos.z > 0) // && Vector3.Distance(Camera.main.transform.position, enemyPos) <= _ESP_Range) // Only draw if in front of the camera
-                //    {
-                //        float boxX = screenPos.x - (_ESP_BoxWidth / 2);
-                //        float boxY = Screen.height - screenPos.y - (_ESP_BoxHeight / 2); // Invert Y for GUI
-                //        GUI.Label(new Rect(boxX, boxY - 20, 200, 20), "Shrine");
-                //        if (_DrawLineOnly)
-                //            DrawLine(new Vector2(Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.feet.transform.position).x, Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.head.transform.position).y - Il2Cpp.GameManager.Instance.player.height * 3), new Vector2(screenPos.x, Screen.height - screenPos.y), UnityEngine.Color.yellow, 1f);
-                //        else
-                //            DrawBox(new Vector2(boxX, boxY), 80f, 100f, UnityEngine.Color.yellow, 1f);
-                //    }
-                //}
+
+                if (_DrawInteractables)
+                {
+                    foreach (var chest in Resources.FindObjectsOfTypeAll<BaseInteractable>()) // not ideal but works, could be more CPU efficient by finding entity list instead of searching.
+                    {
+                        if (chest == null || chest.transform == null)
+                            continue;
+                        var shrinePos = chest.transform.position;
+                        if (shrinePos == null)
+                            continue;
+                        Vector3 screenPos = Camera.main.WorldToScreenPoint(shrinePos);
+                        if (Vector3.Distance(shrinePos, Camera.main.transform.position) > 100.0f) continue; // low range because there is a LOT
+                        if (screenPos.z > 0) // && Vector3.Distance(Camera.main.transform.position, enemyPos) <= _ESP_Range) // Only draw if in front of the camera
+                        {
+                            float boxX = screenPos.x - (_ESP_BoxWidth / 2);
+                            float boxY = Screen.height - screenPos.y - (_ESP_BoxHeight / 2); // Invert Y for GUI
+                            GUI.Label(new Rect(boxX, boxY - 20, 200, 20), chest.name);
+                            DrawBox(new Vector2(boxX, boxY), 80f, 100f, UnityEngine.Color.yellow, 1f);
+                        }
+                        //    DrawLine(new Vector2(Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.feet.transform.position).x, Camera.main.WorldToScreenPoint(Il2Cpp.GameManager.Instance.player.head.transform.position).y - Il2Cpp.GameManager.Instance.player.height * 3), new Vector2(screenPos.x, Screen.height - screenPos.y), UnityEngine.Color.yellow, 1f);
+                        //else
+                    }
+                }
             }
             // Simple toggle for ESP
             GUI.color = Color.red;
@@ -95,15 +106,15 @@ namespace MegaJump
             if (_ESP)
             {
                 GUI.color = Color.green;
-                GUI.Label(new Rect(10, Screen.height - 150, 300, 30), "ESP: ON (F3 to toggle)");
+                GUI.Label(new Rect(10, Screen.height - 150, 300, 30), "ESP: ON (F3 to toggle) | Interactables: " + _DrawInteractables.ToString());
             }
             else
             {
-                GUI.Label(new Rect(10, Screen.height - 150, 300, 30), "ESP: OFF (F3 to toggle)");
+                GUI.Label(new Rect(10, Screen.height - 150, 300, 30), "ESP: OFF (F3 to toggle) | Interactables: " + _DrawInteractables.ToString());
             }
             GUI.Label(new Rect(10, Screen.height - 130, 300, 30), "F1 to Add an Extra Projectile");
             GUI.Label(new Rect(10, Screen.height - 110, 300, 30), "F2 To Increase Attack Speed + 100%");
-            GUI.Label(new Rect(10, Screen.height - 90, 300, 30), "F4 to Toggle Boxes / Lines");
+            GUI.Label(new Rect(10, Screen.height - 90, 300, 30), "F4 to Toggle Enable/Disable Interactable ESP");
             GUI.Label(new Rect(10, Screen.height - 70, 300, 30), "F5 to Heal Player");
             GUI.Label(new Rect(10, Screen.height - 50, 300, 30), "F6 to Grab All XP");
             GUI.Label(new Rect(10, Screen.height - 30, 300, 30), "F7 to Add Extra Jumps");
@@ -140,7 +151,7 @@ namespace MegaJump
             }
             if (UnityEngine.Input.GetKeyDown(KeyCode.F4))
             {
-                _DrawLineOnly = !_DrawLineOnly;
+                _DrawInteractables = !_DrawInteractables;
             }
             if(UnityEngine.Input.GetKeyDown(KeyCode.F5))
             {
