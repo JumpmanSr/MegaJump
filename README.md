@@ -10,7 +10,7 @@ F2 - Increase Attack Speed by 100%
 
 F3 - Toggle ESP
 
-F4 - Turn ESP from Squares -> Path Lines
+F4 - Turn Interactable Object Display in ESP
 
 F5 - Heal the player
 
