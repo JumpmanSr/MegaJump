@@ -20,3 +20,6 @@ F7 - Adds Jumps (I think there's fall damage?)
 
 ![Alt text](https://github.com/JumpmanSr/MegaJump/blob/master/MegaBonk.png?raw=true)
 ![Alt text](https://github.com/JumpmanSr/MegaJump/blob/master/megajump3.png?raw=true)
+
+Nexus Mods Link:
+https://www.nexusmods.com/megabonk/mods/28
