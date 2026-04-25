@@ -18,10 +18,12 @@ F6 - Pickup All XP on Map
 
 F7 - Adds Jumps (I think there's fall damage?)
 
-F10 - Switch to maximum luck
+F10 - Switch to maximum luck (Current released binary won't have this, will need to rebuild)*
 
 ![Alt text](https://github.com/JumpmanSr/MegaJump/blob/master/MegaBonk.png?raw=true)
 ![Alt text](https://github.com/JumpmanSr/MegaJump/blob/master/megajump3.png?raw=true)
 
 Nexus Mods Link:
 https://www.nexusmods.com/megabonk/mods/28
+
+*Credits to: mykytaserdiuk for this
